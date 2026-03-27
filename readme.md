@@ -92,8 +92,7 @@ http://localhost:8000
 
 ## 📸 Screenshot
 
-![Django Welcome](screenshots/django-welcome.jpg)
-
+![Django Welcome](./screenshots/django-welcome.jpeg)
 ---
 
 ## ✅ Features (Current Progress)
