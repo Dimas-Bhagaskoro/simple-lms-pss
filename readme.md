@@ -1,110 +1,103 @@
-# Simple LMS
+# 🎓 Simple LMS
 
-Simple Learning Management System (LMS) project built with Django, Docker, and PostgreSQL.
+Simple Learning Management System (LMS) project built with **Django**, **Docker**, and **PostgreSQL**.
+
+Project ini dikembangkan bertahap dari setup dasar hingga implementasi fitur LMS lengkap beserta optimasi query database.
 
 ---
 
 ## 🚀 Tech Stack
 
-* Django
-* PostgreSQL
-* Docker & Docker Compose
+- Django
+- PostgreSQL
+- Docker
+- Docker Compose
 
 ---
 
 ## 📂 Project Structure
 
-```
 simple-lms/
+├── config/
+├── courses/
+│   ├── fixtures/
+│   ├── migrations/
+│   ├── admin.py
+│   ├── models.py
+│   └── ...
 ├── docker-compose.yml
 ├── Dockerfile
 ├── .env.example
-├── requirements.txt
+├── .env
 ├── manage.py
-├── config/
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
 └── README.md
-```
 
 ---
 
 ## ⚙️ Setup & Run Project
 
-### 1. Clone Repository
+### Clone Repository
 
-```bash
 git clone <URL-REPO-KAMU>
 cd simple-lms
-```
 
-### 2. Setup Environment Variables
+### Setup Environment
 
-Copy file `.env.example` menjadi `.env`:
-
-```bash
 cp .env.example .env
-```
 
----
+### Build & Run
 
-### 3. Build & Run Docker
+docker compose up --build -d
 
-```bash
-docker compose up --build
-```
+### Migration
 
----
-
-### 4. Run Migration
-
-```bash
 docker compose exec web python manage.py migrate
-```
+
+### Create Superuser
+
+docker compose exec web python manage.py createsuperuser
+
+### Load Initial Data
+
+docker compose exec web python manage.py loaddata initial_data
 
 ---
 
-### 5. Akses Aplikasi
+## 🌐 Access Application
 
-Buka browser:
-
-```
 http://localhost:8000
-```
+
+Admin Panel:
+
+http://localhost:8000/admin
 
 ---
 
-## 🔐 Environment Variables
+## ✅ Features
 
-| Variable          | Description                  |
-| ----------------- | ---------------------------- |
-| DEBUG             | Mode debug Django            |
-| SECRET_KEY        | Secret key Django            |
-| ALLOWED_HOSTS     | Host yang diizinkan          |
-| POSTGRES_DB       | Nama database                |
-| POSTGRES_USER     | Username database            |
-| POSTGRES_PASSWORD | Password database            |
-| POSTGRES_HOST     | Host database (gunakan `db`) |
-| POSTGRES_PORT     | Port PostgreSQL              |
+### Progress 1
 
----
+- Dockerized Django app
+- PostgreSQL integration
+- Environment configuration
+- Running development server
 
-## 📸 Screenshot
+### Progress 2
 
-![Django Welcome](./screenshots/django-welcome.jpeg)
----
-
-## ✅ Features (Current Progress)
-
-* Dockerized Django application
-* PostgreSQL database integration
-* Environment-based configuration
-* Django development server running
+- Custom User model (Admin / Instructor / Student)
+- Category hierarchy
+- Course management
+- Ordered lessons
+- Enrollment system
+- Progress tracking
 
 ---
 
-## 📌 Notes
+## ⚡ Query Optimization
 
-* Gunakan Docker Desktop untuk menjalankan project
-* Pastikan port 8000 dan 5432 tidak digunakan aplikasi lain
+Using `select_related()` to solve N+1 query issue.
+
+| Scenario | Query | Total |
+|----------|-------|------|
+| Default | Course.objects.all() | 2+ |
+| Optimized | Course.objects.for_listing() | 1 |
