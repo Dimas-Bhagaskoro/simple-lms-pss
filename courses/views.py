@@ -1,3 +1,17 @@
-from django.shortcuts import render
+from ninja import Router
+from .models import Course
 
-# Create your views here.
+router = Router()
+
+@router.get("/courses")
+def list_courses(request):
+    courses = Course.objects.for_listing()
+    return [
+        {
+            "id": c.id,
+            "title": c.title,
+            "instructor": c.instructor.username,
+            "category": c.category.name,
+        }
+        for c in courses
+    ]

@@ -1,3 +1,9 @@
 Django==5.2.6
 psycopg[binary]==3.2.9
 python-dotenv==1.0.1
+
+django-ninja==1.1.0
+python-jose==3.3.0
+passlib[bcrypt]==1.7.4
+
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3NzczMTI1MzZ9.GV9HMO_wZ9fg-znMU-YNWX5J3VSS1KB3hwgAb94HQUw"
