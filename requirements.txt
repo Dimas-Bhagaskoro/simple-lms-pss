@@ -6,4 +6,7 @@ django-ninja==1.1.0
 python-jose==3.3.0
 passlib[bcrypt]==1.7.4
 
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo1LCJleHAiOjE3NzczMTI1MzZ9.GV9HMO_wZ9fg-znMU-YNWX5J3VSS1KB3hwgAb94HQUw"
+redis==5.0.8
+django-redis==5.4.0
+
+django-ratelimit==3.0.1

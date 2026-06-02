@@ -178,6 +178,6 @@ Menggunakan `select_related()` dan `prefetch_related()` untuk menghindari N+1 qu
 | Optimized | Course.objects.for_listing() | 1 |
 
 ![Django](./screenshots/django-welcome.jpeg)
-![Swagger](./screenshots/swagger-documentation.jpg)
-![Login](./screenshots/postman-login.jpg)
-![Courses](./screenshots/course.jpg)
+![Swagger](./screenshots/swagger-documentation.jpeg)
+![Login](./screenshots/postman-login.jpeg)
+![Courses](./screenshots/course.jpeg)

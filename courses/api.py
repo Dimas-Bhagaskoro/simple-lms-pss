@@ -2,6 +2,8 @@ from ninja import Router, Schema
 from typing import List
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
+from .rate_limit import rate_limit
 
 from .models import Course, Enrollment, Progress, Lesson
 from users.api import AuthBearer
@@ -27,11 +29,46 @@ class CourseCreateSchema(Schema):
 
 @router.get("/", response=List[CourseSchema])
 def list_courses(request, limit: int = 10):
-    return Course.objects.all()[:limit]
+
+    rate_limit(request)
+    
+    cache_key = f"courses_list_{limit}"
+
+    courses = cache.get(cache_key)
+
+    if courses is None:
+        courses = list(
+            Course.objects.all().values(
+                "id",
+                "title",
+                "description"
+            )[:limit]
+        )
+
+        cache.set(cache_key, courses, timeout=300)
+
+    return courses
 
 @router.get("/{course_id}", response=CourseSchema)
 def get_course(request, course_id: int):
-    return get_object_or_404(Course, id=course_id)
+
+    cache_key = f"course_{course_id}"
+
+    course = cache.get(cache_key)
+
+    if course is None:
+
+        course_obj = get_object_or_404(Course, id=course_id)
+
+        course = {
+            "id": course_obj.id,
+            "title": course_obj.title,
+            "description": course_obj.description,
+        }
+
+        cache.set(cache_key, course, timeout=300)
+
+    return course
 
 # =====================
 # PROTECTED
@@ -49,7 +86,8 @@ def create_course(request, data: CourseCreateSchema):
         description=data.description,
         instructor=user
     )
-
+    cache.delete_pattern("courses_list_*")
+    
     return {"id": course.id, "title": course.title}
 
 @router.patch("/{course_id}", auth=AuthBearer())
@@ -64,6 +102,9 @@ def update_course(request, course_id: int, data: CourseCreateSchema):
     course.description = data.description
     course.save()
 
+    cache.delete_pattern("courses_list_*")
+    cache.delete(f"course_{course_id}")
+
     return {"message": "Updated"}
 
 @router.delete("/{course_id}", auth=AuthBearer())
@@ -73,6 +114,9 @@ def delete_course(request, course_id: int):
 
     if user.role != "admin":
         return {"error": "Hanya admin"}
+
+    cache.delete_pattern("courses_list_*")
+    cache.delete(f"course_{course_id}")
 
     course.delete()
     return {"message": "Deleted"}

@@ -14,6 +14,13 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    image: redis:7-alpine
+    container_name: simple_lms_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
   web:
     build: .
     container_name: simple_lms_web
@@ -27,6 +34,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
 
 volumes:
   postgres_data:
