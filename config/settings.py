@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -131,3 +132,10 @@ AUTH_USER_MODEL = 'courses.User'
 
 MONGO_URI = "mongodb://mongodb:27017/"
 MONGO_DB_NAME = "simple_lms"
+CELERY_BROKER_URL = "amqp://guest:guest@rabbitmq:5672//"
+CELERY_BEAT_SCHEDULE = {
+    "update-course-statistics-every-minute": {
+        "task": "courses.tasks.update_course_statistics",
+        "schedule": 60.0,
+    },
+}

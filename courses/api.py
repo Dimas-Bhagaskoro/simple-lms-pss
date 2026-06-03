@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from .rate_limit import rate_limit
 from .mongo import activity_logs, learning_analytics
+from .tasks import send_enrollment_email
 
 from .models import Course, Enrollment, Progress, Lesson
 from users.api import AuthBearer
@@ -147,7 +148,12 @@ def enroll_course(request, course_id: int):
         "user_id": user.id,
         "action": "enroll_course",
         "course_id": course_id
-    })   
+    })
+
+    send_enrollment_email.delay(
+    user.email,
+    course_id
+)   
 
     return {"message": "Berhasil enroll"}
 

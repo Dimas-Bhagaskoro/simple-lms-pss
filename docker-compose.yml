@@ -30,6 +30,14 @@ services:
     volumes:
       - mongodb_data:/data/db
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: simple_lms_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
   web:
     build: .
     container_name: simple_lms_web
@@ -44,7 +52,49 @@ services:
     depends_on:
       - db
       - redis
+      - mongodb
+      - rabbitmq   
+    
+  celery-worker:
+    build: .
+    container_name: simple_lms_celery_worker
+    command: celery -A config worker -l info
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
 
+  celery-beat:
+    build: .
+    container_name: simple_lms_celery_beat
+    command: celery -A config beat -l info
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+      - celery-worker
+  flower:
+    build: .
+    container_name: simple_lms_flower
+    command: celery -A config flower --port=5555
+    restart: always
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+      - celery-worker
 volumes:
   postgres_data:
   mongodb_data:
