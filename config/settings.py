@@ -128,3 +128,6 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = 'courses.User'
+
+MONGO_URI = "mongodb://mongodb:27017/"
+MONGO_DB_NAME = "simple_lms"

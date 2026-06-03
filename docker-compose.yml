@@ -21,6 +21,15 @@ services:
     ports:
       - "6379:6379"
 
+  mongodb:
+    image: mongo:7
+    container_name: simple_lms_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
   web:
     build: .
     container_name: simple_lms_web
@@ -38,3 +47,4 @@ services:
 
 volumes:
   postgres_data:
+  mongodb_data:

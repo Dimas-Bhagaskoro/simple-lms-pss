@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from .rate_limit import rate_limit
+from .mongo import activity_logs, learning_analytics
 
 from .models import Course, Enrollment, Progress, Lesson
 from users.api import AuthBearer
@@ -22,6 +23,7 @@ class CourseSchema(Schema):
 class CourseCreateSchema(Schema):
     title: str
     description: str
+    category_id: int
 
 # =====================
 # PUBLIC
@@ -84,7 +86,8 @@ def create_course(request, data: CourseCreateSchema):
     course = Course.objects.create(
         title=data.title,
         description=data.description,
-        instructor=user
+        instructor=user,
+        category_id=data.category_id
     )
     cache.delete_pattern("courses_list_*")
     
@@ -139,6 +142,12 @@ def enroll_course(request, course_id: int):
 
     if not created:
         return {"message": "Sudah terdaftar"}
+    
+    activity_logs.insert_one({
+        "user_id": user.id,
+        "action": "enroll_course",
+        "course_id": course_id
+    })   
 
     return {"message": "Berhasil enroll"}
 
@@ -156,6 +165,22 @@ def my_courses(request):
         }
         for e in enrollments
     ]
+
+@router.get("/reports/course-analytics", auth=AuthBearer())
+def course_analytics(request):
+
+    result = list(
+        learning_analytics.aggregate([
+            {
+                "$group": {
+                    "_id": "$course_id",
+                    "total_completed": {"$sum": 1}
+                }
+            }
+        ])
+    )
+
+    return result
 
 @router.post("/enrollments/{enrollment_id}/progress", auth=AuthBearer())
 def mark_progress(request, enrollment_id: int, lesson_id: int):
@@ -178,5 +203,12 @@ def mark_progress(request, enrollment_id: int, lesson_id: int):
 
     progress.is_completed = True
     progress.save()
+
+    learning_analytics.insert_one({
+        "user_id": user.id,
+        "course_id": enrollment.course_id,
+        "lesson_id": lesson.id,
+        "action": "lesson_completed"
+    })
 
     return {"message": "Lesson selesai 🎉"}

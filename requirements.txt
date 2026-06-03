@@ -10,3 +10,4 @@ redis==5.0.8
 django-redis==5.4.0
 
 django-ratelimit==3.0.1
+pymongo==4.8.0

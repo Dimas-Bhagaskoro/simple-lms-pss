@@ -17,8 +17,11 @@ class AuthBearer(HttpBearer):
     def authenticate(self, request, token):
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            print("TOKEN VALID:", payload)
             return payload
-        except:
+
+        except Exception as e:
+            print("TOKEN ERROR:", e)
             return None
 
 # =====================
