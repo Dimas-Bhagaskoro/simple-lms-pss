@@ -420,7 +420,7 @@ Menggunakan `select_related()` dan `prefetch_related()` untuk menghindari N+1 qu
 
 ![Django](./screenshots/django-welcome.jpeg)
 ![Swagger](./screenshots/swagger-documentation.jpg)
-![Login](./screenshots/postman-login.jpg)
+![Postman](./screenshots/postman-dashboard.png)
 ![Courses](./screenshots/course.jpg)
 ![Flower](./screenshots/flower-task.png)
 ![RabbitMQ](./screenshots/rabbitMQ.png)
